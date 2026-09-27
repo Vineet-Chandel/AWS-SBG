@@ -1,7 +1,8 @@
-import pool from "@/lib/Neon/client";
+import pool from "@/lib/client";
 import { NextResponse } from "next/server";
 import validator from "validator";
 import bcrypt from "bcrypt";
+import { createSession } from "@/lib/Auth/session";
 
 export async function POST(req: Request) {
     try {
@@ -63,7 +64,7 @@ export async function POST(req: Request) {
                 { status: 401 }
             );
         }
-
+        await createSession(user.id, user.gmail);
         // Do not return password in the response
         const { password: _, ...safeUser } = user;
 

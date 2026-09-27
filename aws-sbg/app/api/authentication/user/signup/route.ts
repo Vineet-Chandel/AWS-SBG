@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import validateSignUpData from "./validateSignUpData";
-import pool from "@/lib/Neon/client";
+import pool from "@/lib/client";
 import bcrypt from "bcrypt";
+import { createSession } from "@/lib/Auth/session";
 
 interface IDetails {
     firstName: string;
@@ -34,8 +35,9 @@ export async function POST(req: Request) {
                 {
                     success: false,
                     message: "Email is already registered"
-                }
-            )
+                },
+                { status: 409 }
+            );
         }
 
         const passwordHash = await bcrypt.hash(password, 10);
@@ -54,7 +56,7 @@ export async function POST(req: Request) {
                 termsAccepted
             ]
         )
-
+        await createSession(newUser.rows[0].id, newUser.rows[0].gmail);
         return NextResponse.json(
             {
                 success: true,
