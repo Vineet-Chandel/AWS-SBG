@@ -1,9 +1,51 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 interface itrigger {
     trigger: boolean;
+}
+
+/* ─────────────────────────────────────────────
+   Hook to compute responsive cell size based on
+   container width. The grid is 23 columns wide,
+   so cellSize = containerWidth / 23.
+   ───────────────────────────────────────────── */
+function useResponsiveCellSize() {
+    const [cellSize, setCellSize] = useState(28);
+
+    useEffect(() => {
+        function compute() {
+            // Target the right-panel container width
+            // On lg screens: ~45% of viewport, minus 30px border (15px × 2)
+            // On xl screens: ~50% of viewport, minus 30px border
+            const vw = window.innerWidth;
+            let containerWidth: number;
+
+            if (vw >= 1280) {
+                // xl breakpoint
+                containerWidth = vw * 0.5 - 30;
+            } else if (vw >= 1024) {
+                // lg breakpoint
+                containerWidth = vw * 0.45 - 30;
+            } else {
+                // Fallback (shouldn't render, but safe)
+                containerWidth = vw - 30;
+            }
+
+            const cols = 23;
+            const computed = Math.floor(containerWidth / cols);
+            // Clamp between 12 and 40
+            setCellSize(Math.max(12, Math.min(40, computed)));
+        }
+
+        compute();
+        window.addEventListener("resize", compute);
+        return () => window.removeEventListener("resize", compute);
+    }, []);
+
+    return cellSize;
 }
 
 /* ─────────────────────────────────────────────
@@ -43,18 +85,11 @@ function PixelRow({
     );
 }
 
-/* ─────────────────────────────────────────────
-   SIGN‑IN BANNER  (Cyan / Turquoise theme)
-   Inspired by the first reference image
-   ───────────────────────────────────────────── */
-function SignInBanner() {
-    // Top pixel‑block pattern – staircase descending left side
-    const topRows = [
 
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+function SignInBanner() {
+    const cellSize = useResponsiveCellSize();
+
+    const topRows = [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -71,7 +106,6 @@ function SignInBanner() {
 
     ];
 
-    // Bottom pixel‑block pattern – staircase ascending from left
     const bottomRows = [
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -96,7 +130,7 @@ function SignInBanner() {
 
     ];
 
-    // Gradient bands for the top section – sky blue → cyan
+
     const topColors = [
         "bg-[#00a2ff]",
         "bg-[#00b0ff]",
@@ -108,16 +142,11 @@ function SignInBanner() {
         "bg-[#00e5c0]",
     ];
 
-    // Gradient bands for the bottom section – turquoise → teal
+
     const bottomColors = [
 
 
 
-
-
-
-
-
         "bg-[#00a2ff]",
         "bg-[#00b0ff]",
         "bg-[#00bfff]",
@@ -133,34 +162,28 @@ function SignInBanner() {
         "bg-[#00ddcc]",
         "bg-[#00e5c0]",
         "bg-[#00e5c0]",
-    ];
-
-    // Small floating accent blocks
-    const floatingBlocks = [
-        { x: "82%", y: "38%", size: 22, color: "#00d4dd", delay: 0.6 },
-        { x: "12%", y: "52%", size: 18, color: "#00bfff", delay: 0.9 },
-        { x: "75%", y: "65%", size: 14, color: "#00e5c0", delay: 1.1 },
     ];
 
     return (
-        <div className="relative w-full h-full overflow-hidden  bg-[#111118] flex flex-col justify-between select-none border border-white/[0.04]">
-            {/* ── Subtle ambient glow ── */}
+        <div className="relative w-full h-full overflow-hidden bg-[#111118] flex flex-col justify-between select-none border border-white/[0.04]">
+
             <div className="absolute top-0 left-0 w-full h-[55%] bg-gradient-to-b from-[#00bfff]/10 to-transparent pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-full h-[45%] bg-gradient-to-t from-[#00d4dd]/8 to-transparent pointer-events-none" />
 
-            {/* ── Top pixel blocks ── */}
-            <div className="relative z-10 flex flex-col ">
+
+            <div className="relative z-10 flex flex-col">
                 {topRows.map((row, ri) => (
                     <PixelRow
                         key={ri}
                         cells={row}
                         color={topColors[ri] || topColors[topColors.length - 1]}
+                        cellSize={cellSize}
                         delay={ri * 0.04}
                     />
                 ))}
             </div>
 
-            {/* ── Top navigation bar text ── */}
+
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -175,13 +198,13 @@ function SignInBanner() {
                 </span>
             </motion.div>
 
-            {/* ── Center content ── */}
-            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8">
+
+            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.35 }}
-                    className="text-4xl md:text-5xl text-center font-bold font-mono text-white tracking-tight leading-[1.1]"
+                    className="text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl text-center font-bold font-mono text-white tracking-tight leading-[1.1]"
                 >
                     Welcome to AWS <br />Student Builder Group PSIT
                 </motion.h2>
@@ -196,6 +219,7 @@ function SignInBanner() {
                         key={ri}
                         cells={row}
                         color={bottomColors[ri] || bottomColors[bottomColors.length - 1]}
+                        cellSize={cellSize}
                         delay={0.3 + ri * 0.04}
                     />
                 ))}
@@ -206,12 +230,11 @@ function SignInBanner() {
     );
 }
 
-/* ─────────────────────────────────────────────
-   SIGN‑UP BANNER  (Orange → Pink → Purple theme)
-   Inspired by the second reference image
-   ───────────────────────────────────────────── */
+
 function SignUpBanner() {
-    // Top pixel‑block pattern – staircase descending left side
+    const cellSize = useResponsiveCellSize();
+
+
     const topRows = [
 
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -235,7 +258,7 @@ function SignUpBanner() {
 
     ];
 
-    // Bottom pixel‑block pattern – staircase ascending from left
+
     const bottomRows = [
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -247,18 +270,9 @@ function SignUpBanner() {
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-
-
-
-
-
-
-
-
-
     ];
 
-    // Top gradient: warm orange → coral → hot pink
+
     const topColors = [
         "bg-[#ff6a33]",
         "bg-[#ff5c45]",
@@ -269,7 +283,7 @@ function SignUpBanner() {
         "bg-[#d828b8]",
     ];
 
-    // Bottom gradient: hot pink → fuchsia → vivid purple
+
     const bottomColors = [
         "bg-[#d828b8]",
         "bg-[#cc30c0]",
@@ -281,7 +295,7 @@ function SignUpBanner() {
         "bg-[#8460f0]",
     ];
 
-    // Floating pixel accent blocks
+
     const floatingBlocks = [
         { x: "80%", y: "28%", size: 22, color: "#ff4070", delay: 0.5 },
         { x: "85%", y: "44%", size: 16, color: "#e830a0", delay: 0.7 },
@@ -290,24 +304,25 @@ function SignUpBanner() {
     ];
 
     return (
-        <div className="relative w-full h-full overflow-hidden  bg-[#111118] flex flex-col justify-between select-none border border-white/[0.04]">
-            {/* ── Subtle ambient glow ── */}
+        <div className="relative w-full h-full overflow-hidden bg-[#111118] flex flex-col justify-between select-none border border-white/[0.04]">
+
             <div className="absolute top-0 left-0 w-full h-[50%] bg-gradient-to-b from-[#ff6a33]/8 to-transparent pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-[#9058e8]/8 to-transparent pointer-events-none" />
 
-            {/* ── Top pixel blocks ── */}
+
             <div className="relative z-10 flex flex-col">
                 {topRows.map((row, ri) => (
                     <PixelRow
                         key={ri}
                         cells={row}
                         color={topColors[ri] || topColors[topColors.length - 1]}
+                        cellSize={cellSize}
                         delay={ri * 0.04}
                     />
                 ))}
             </div>
 
-            {/* ── Top navigation bar text ── */}
+
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -322,13 +337,13 @@ function SignUpBanner() {
                 </span>
             </motion.div>
 
-            {/* ── Center content ── */}
-            <div className="relative z-10 flex-1 flex flex-col items-start justify-center px-8">
+
+            <div className="relative z-10 flex-1 flex flex-col items-start justify-center px-4 sm:px-6 lg:px-8">
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.35 }}
-                    className="text-3xl md:text-[2.65rem] font-bold font-mono text-white tracking-tight leading-[1.15]"
+                    className="text-xl lg:text-2xl xl:text-3xl 2xl:text-[2.65rem] font-bold font-mono text-white tracking-tight leading-[1.15]"
                 >
                     Build smarter
                     <br />
@@ -337,7 +352,7 @@ function SignUpBanner() {
                     solutions
                 </motion.h2>
 
-                {/* Floating accent blocks */}
+
                 {floatingBlocks.map((block, i) => (
                     <motion.div
                         key={i}
@@ -356,13 +371,14 @@ function SignUpBanner() {
                 ))}
             </div>
 
-            {/* ── Bottom pixel blocks ── */}
+
             <div className="relative z-10 flex flex-col">
                 {bottomRows.map((row, ri) => (
                     <PixelRow
                         key={ri}
                         cells={row}
                         color={bottomColors[ri] || bottomColors[bottomColors.length - 1]}
+                        cellSize={cellSize}
                         delay={0.3 + ri * 0.04}
                     />
                 ))}
@@ -373,9 +389,7 @@ function SignUpBanner() {
     );
 }
 
-/* ─────────────────────────────────────────────
-   MAIN EXPORT – switches between banners
-   ───────────────────────────────────────────── */
+
 export default function Right({ trigger }: itrigger) {
     if (trigger) {
         return <SignInBanner />;

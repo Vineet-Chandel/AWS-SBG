@@ -3,11 +3,13 @@ import AuthForm from "../AuthForm";
 
 export default function SignUpPage() {
     return (
-        <div className="h-screen w-full bg-white flex justify-between overflow-hidden text-white font-sans">
-            <div className="w-[50%] h-full relative">
+        <div className="min-h-screen w-full bg-white flex flex-col lg:flex-row overflow-hidden text-white font-sans">
+            {/* Auth form – full width on mobile, left half on desktop */}
+            <div className="w-full lg:w-[55%] xl:w-[50%] h-[100svh] lg:h-screen relative order-1">
                 <AuthForm mode="signup" />
             </div>
-            <div className=" h-full border-[15px] border-black">
+            {/* Right banner – hidden on small screens, visible on lg+ */}
+            <div className="hidden lg:block lg:w-[45%] xl:w-[50%] h-screen border-[15px] border-black order-2">
                 <div className="w-full h-full relative">
                     <Right trigger={false} />
                 </div>
