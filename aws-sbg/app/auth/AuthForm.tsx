@@ -75,7 +75,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
       );
 
       if (Data.data.success) {
-        navigate.push("/dashboard");
+        navigate.push("/main/dashboard");
       }
     } catch (err: any) {
       setError(
@@ -117,7 +117,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
       if (Data.data.success) {
 
 
-        navigate.push("/dashboard");
+        navigate.push("/main/dashboard");
       }
     } catch (err: any) {
       setError(
