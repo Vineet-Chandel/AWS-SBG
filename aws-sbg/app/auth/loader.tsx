@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 export default function Loader({ className = "" }: { className?: string }) {
   // Sequence of active highlight rotating clockwise: Top (0) -> Right (1) -> Bottom (2) -> Left (3)
   // Perfectly seamless one-by-one rotation with no delay or gap
-  const duration = 0.1;
+  const duration = 0.5;
 
   const getAnimation = (order: number) => {
     // 4 phases for the 4 sides: 0: 0-25%, 1: 25-50%, 2: 50-75%, 3: 75-100%
