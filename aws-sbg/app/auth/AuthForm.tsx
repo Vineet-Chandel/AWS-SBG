@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { use, useState } from "react";
 
+import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import Loader from "./loader";
 interface AuthFormProps {
   mode: "signin" | "signup";
 }
-
 // Simple Google SVG Icon
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -37,10 +38,99 @@ const GithubIcon = () => (
   </svg>
 );
 
+
 export default function AuthForm({ mode }: AuthFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isSignUp = mode === "signup";
+  const navigate = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+
+
+  const continueSignin = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+
+      if (firstName.length <= 3 || lastName.length <= 3) {
+        throw new Error("Enter the valid name")
+      }
+
+      if (!email.trim()) {
+        throw new Error("Email is required.");
+      }
+
+      if (password.length < 8) {
+        throw new Error("Password must be at least 8 characters.");
+      }
+      const Data = await axios.post("/api/authentication/users/signup",
+        {
+          firstName: firstName,
+          lastName: lastName,
+          email: email.trim(),
+          password: password,
+        }
+      );
+      if (Data.data.success) {
+
+
+        navigate.push("/dashboard");
+      }
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message ||
+        "Unable to sign in. Please try again."
+      );
+    }
+
+
+  }
+  const continueSignup = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+
+      if (firstName.length <= 3 || lastName.length <= 3) {
+        throw new Error("Enter the valid name")
+      }
+
+      if (!email.trim()) {
+        throw new Error("Email is required.");
+      }
+
+      if (password.length < 8) {
+        throw new Error("Password must be at least 8 characters.");
+      }
+      const Data = await axios.post("/api/authentication/users/signup",
+        {
+          firstName: firstName,
+          lastName: lastName,
+          email: email.trim(),
+          password: password,
+        }
+      );
+      if (Data.data.success) {
+
+
+        navigate.push("/dashboard");
+      }
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message ||
+        "Unable to sign in. Please try again."
+      );
+    }
+
+
+  }
   return (
     <div className="flex w-full h-full flex-col items-center justify-center px-8 sm:px-12 lg:px-20 xl:px-24 ">
       <div className="w-full flex flex-col items-center   px-8 sm:px-12 lg:px-20 xl:px-24  xl:py-24">
@@ -82,6 +172,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 <input
                   type="text"
                   placeholder="e.g. John"
+                  onChange={e => setFirstName(e.target.value)}
                   className="w-full bg-[#111111] text-white rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-black/30 transition-all placeholder:text-[#52525b] border border-transparent focus:border-[#27272a]"
                 />
               </div>
@@ -90,6 +181,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 <input
                   type="text"
                   placeholder="e.g. Francisco"
+                  onChange={e => setLastName(e.target.value)}
                   className="w-full bg-[#111111] text-white rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-black/30 transition-all placeholder:text-[#52525b] border border-transparent focus:border-[#27272a]"
                 />
               </div>
@@ -100,6 +192,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             <label className="text-black text-sm font-medium ml-1">Email</label>
             <input
               type="email"
+              onChange={e => setEmail(e.target.value)}
               placeholder={isSignUp ? "e.g. johnfrans@gmail.com" : "Enter your email"}
               className="w-full bg-[#111111] text-white rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-black/30 transition-all placeholder:text-[#52525b] border border-transparent focus:border-[#27272a]"
             />
@@ -110,6 +203,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
+                onChange={e => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 className="w-full bg-[#111111] text-white rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-black/30 transition-all placeholder:text-[#52525b] border border-transparent focus:border-[#27272a] pr-12"
               />
@@ -124,31 +218,40 @@ export default function AuthForm({ mode }: AuthFormProps) {
             {isSignUp ? (
               <p className="text-[#a1a1aa] text-xs mt-0.5 ml-1">Must be at least 8 characters.</p>
             ) : (
-              <Link href="/auth/forgot-password" className="text-black text-xs font-medium self-end mt-0.5 hover:underline mr-1">
+              <span onClick={() => navigate.push("/auth/forgot-password")} className="text-black text-xs font-medium self-end mt-0.5 hover:underline mr-1">
                 Forgot password?
-              </Link>
+              </span>
             )}
           </div>
 
           <button
+
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (isSignUp) {
+                continueSignup();
+              } else {
+                continueSignin();
+              }
+            }}
             type="button"
             className="w-[50%] self-center bg-gray-200 text-black font-bold rounded-xl py-3.5 mt-4 hover:bg-gray-300 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.15)]"
           >
-            {isSignUp ? "Sign Up" : "Log In"}
+            {loading ? <Loader /> : isSignUp ? "Sign Up" : "Log In"}
           </button>
         </form>
 
         {/* Footer */}
         <p className="text-[#a1a1aa] text-sm mt-8">
           {isSignUp ? "Already have an account? " : "Don't have an account? "}
-          <Link
-            href={isSignUp ? "/auth/signin" : "/auth/signup"}
+          <span
+            onClick={() => navigate.push(isSignUp ? "/auth/signin" : "/auth/signup")}
             className="text-black font-bold hover:underline"
           >
             {isSignUp ? "Log in" : "Sign up"}
-          </Link>
+          </span>
         </p>
       </div>
-    </div>
+    </div >
   );
 }
