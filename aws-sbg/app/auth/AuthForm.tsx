@@ -50,6 +50,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [termAccepted, setTermAccepted] = useState(false);
 
 
 
@@ -58,11 +59,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
     setError("");
 
     try {
-
-      if (firstName.length <= 3 || lastName.length <= 3) {
-        throw new Error("Enter the valid name")
-      }
-
       if (!email.trim()) {
         throw new Error("Email is required.");
       }
@@ -70,27 +66,24 @@ export default function AuthForm({ mode }: AuthFormProps) {
       if (password.length < 8) {
         throw new Error("Password must be at least 8 characters.");
       }
-      const Data = await axios.post("/api/authentication/users/signup",
+
+      const Data = await axios.post("/api/authentication/user/signin",
         {
-          firstName: firstName,
-          lastName: lastName,
-          email: email.trim(),
+          gmail: email.trim(),
           password: password,
         }
       );
+
       if (Data.data.success) {
-
-
         navigate.push("/dashboard");
       }
     } catch (err: any) {
       setError(
-        err.response?.data?.message ||
-        "Unable to sign in. Please try again."
+        err.response?.data?.message || err.message || "Unable to sign in. Please try again."
       );
+    } finally {
+      setLoading(false);
     }
-
-
   }
   const continueSignup = async () => {
     setLoading(true);
@@ -109,12 +102,16 @@ export default function AuthForm({ mode }: AuthFormProps) {
       if (password.length < 8) {
         throw new Error("Password must be at least 8 characters.");
       }
-      const Data = await axios.post("/api/authentication/users/signup",
+      if (!termAccepted) {
+        throw new Error("You must accept the terms and conditions.");
+      }
+      const Data = await axios.post("/api/authentication/user/signup",
         {
           firstName: firstName,
           lastName: lastName,
-          email: email.trim(),
+          gmail: email.trim(),
           password: password,
+          termsAccepted: termAccepted,
         }
       );
       if (Data.data.success) {
@@ -124,12 +121,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
       }
     } catch (err: any) {
       setError(
-        err.response?.data?.message ||
-        "Unable to sign in. Please try again."
+        err.response?.data?.message || err.message || "Unable to sign up. Please try again."
       );
+    } finally {
+      setLoading(false);
     }
-
-
   }
   return (
     <div className="flex w-full h-full flex-col items-center justify-center px-8 sm:px-12 lg:px-20 xl:px-24 ">
@@ -224,9 +220,26 @@ export default function AuthForm({ mode }: AuthFormProps) {
             )}
           </div>
 
+          {isSignUp && (
+            <div className="flex items-center gap-2 mt-2 ml-1">
+              <input
+                type="checkbox"
+                id="termAccepted"
+                checked={termAccepted}
+                onChange={(e) => setTermAccepted(e.target.checked)}
+                className="w-4 h-4 rounded border-[#27272a] bg-[#111111] accent-black cursor-pointer"
+              />
+              <label htmlFor="termAccepted" className="text-[#a1a1aa] text-sm cursor-pointer hover:text-black transition-colors">
+                I accept the terms and conditions
+              </label>
+            </div>
+          )}
+
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
           <button
 
-            onSubmit={(e) => {
+            onClick={(e) => {
               e.preventDefault();
               if (isSignUp) {
                 continueSignup();

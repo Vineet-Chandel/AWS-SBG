@@ -1,0 +1,10 @@
+--  USER TABLE
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    firstName VARCHAR(100) NOT NULL,
+    lastName VARCHAR(100) NOT NULL,
+    gmail VARCHAR(255) UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    termsAccepted BOOLEAN NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
