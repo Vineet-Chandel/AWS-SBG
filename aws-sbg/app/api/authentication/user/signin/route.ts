@@ -6,8 +6,9 @@ import { createSession } from "@/lib/Auth/session";
 
 export async function POST(req: Request) {
     try {
-        const Data = await req.json();
+        // why req.json ?
 
+        const Data = await req.json();
         if (!Data || typeof Data !== "object") {
             return NextResponse.json(
                 { success: false, message: "Invalid request body." },

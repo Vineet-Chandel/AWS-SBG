@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { LogOut, User, Mail, Calendar, Key, ShieldCheck } from "lucide-react";
+import Loader from "@/components/Loader";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
@@ -42,7 +43,9 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex w-full min-h-[calc(100vh-4rem)] flex-col items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-black"></div>
+        <div className="h-16 w-16">
+          <Loader />
+        </div>
       </div>
     );
   }
@@ -50,7 +53,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#fafafa] flex flex-col items-center py-16 px-4 sm:px-8 lg:px-20 font-sans">
       <div className="w-full max-w-2xl bg-white rounded-3xl shadow-[0_8px_40px_rgb(0,0,0,0.04)] border border-gray-100 p-8 sm:p-12 relative overflow-hidden">
-        
+
         {/* Background glow effects */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-gray-100/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
@@ -64,7 +67,7 @@ export default function DashboardPage() {
               Welcome back, {user?.firstname || "User"}!
             </p>
           </div>
-          <button 
+          <button
             onClick={handleLogout}
             className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#111111] hover:bg-[#18181b] border border-[#27272a] transition-all text-white font-semibold text-sm shadow-md"
           >
@@ -75,7 +78,7 @@ export default function DashboardPage() {
 
         {/* Profile Details (Styled like AuthForm inputs) */}
         <div className="w-full flex flex-col gap-6 relative z-10">
-          
+
           <div className="flex gap-4 flex-col sm:flex-row">
             <div className="flex flex-col gap-2 flex-1">
               <label className="text-black text-sm font-medium ml-1 flex items-center gap-2">
@@ -85,7 +88,7 @@ export default function DashboardPage() {
                 {user?.firstname || "N/A"}
               </div>
             </div>
-            
+
             <div className="flex flex-col gap-2 flex-1">
               <label className="text-black text-sm font-medium ml-1 flex items-center gap-2">
                 <User className="w-4 h-4 text-[#a1a1aa]" /> Last Name
@@ -114,7 +117,7 @@ export default function DashboardPage() {
                 #{user?.id ? user.id.toString().padStart(5, '0') : "00000"}
               </div>
             </div>
-            
+
             <div className="flex flex-col gap-2 flex-1">
               <label className="text-black text-sm font-medium ml-1 flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-[#a1a1aa]" /> Member Since

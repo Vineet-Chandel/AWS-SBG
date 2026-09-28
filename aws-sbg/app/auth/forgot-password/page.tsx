@@ -1,4 +1,4 @@
-import Loader from "../loader";
+import Loader from "@/components/Loader";
 
 export default function ForgotPass() {
 

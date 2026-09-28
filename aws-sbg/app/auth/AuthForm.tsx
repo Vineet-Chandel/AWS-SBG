@@ -5,7 +5,8 @@ import { use, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import Loader from "./loader";
+import Loader from "@/components/Loader";
+import { useToast } from "@/components/ToastProvider";
 interface AuthFormProps {
   mode: "signin" | "signup";
 }
@@ -44,7 +45,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const isSignUp = mode === "signup";
   const navigate = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { toast } = useToast();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -56,7 +57,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
   const continueSignin = async () => {
     setLoading(true);
-    setError("");
 
     try {
       if (!email.trim()) {
@@ -78,8 +78,9 @@ export default function AuthForm({ mode }: AuthFormProps) {
         navigate.push("/main/dashboard");
       }
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || err.message || "Unable to sign in. Please try again."
+      toast(
+        err.response?.data?.message || err.message || "Unable to sign in. Please try again.",
+        "error"
       );
     } finally {
       setLoading(false);
@@ -87,7 +88,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
   }
   const continueSignup = async () => {
     setLoading(true);
-    setError("");
 
     try {
 
@@ -120,8 +120,9 @@ export default function AuthForm({ mode }: AuthFormProps) {
         navigate.push("/main/dashboard");
       }
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || err.message || "Unable to sign up. Please try again."
+      toast(
+        err.response?.data?.message || err.message || "Unable to sign up. Please try again.",
+        "error"
       );
     } finally {
       setLoading(false);
@@ -235,10 +236,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
             </div>
           )}
 
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           <button
-
             onClick={(e) => {
               e.preventDefault();
               if (isSignUp) {
@@ -248,9 +247,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
               }
             }}
             type="button"
-            className="w-[50%] self-center bg-gray-200 text-black font-bold rounded-xl py-3.5 mt-4 hover:bg-gray-300 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.15)]"
+            className="w-[50%] self-center bg-gray-200 text-black font-bold rounded-xl py-3.5 mt-4 hover:bg-gray-300 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.15)] flex justify-center items-center min-h-[52px] border"
           >
-            {loading ? <Loader /> : isSignUp ? "Sign Up" : "Log In"}
+            {loading ?
+              <div className="flex gap-2 items-center justify-center"> <div className="h-6 w-6 "><Loader /> </div> Redirecting ... </div>
+              : isSignUp ? "Sign Up" : "Log In"}
           </button>
         </form>
 

@@ -43,30 +43,30 @@ export default function Loader({ className = "" }: { className?: string }) {
   };
 
   return (
-    <div className={`relative flex items-center justify-center p-6 ${className}`}>
+    <div className={`relative flex items-center justify-center h-full w-full ${className}`}>
       {/* Main 4-box ring structure following the AWS Builder Center pattern */}
-      <div className="relative h-[120px] w-[120px] flex flex-col items-center justify-between select-none">
+      <div className="relative h-full max-h-full aspect-square flex flex-col items-center justify-between select-none">
         {/* Top Box (Index 0) */}
         <motion.div
           animate={getAnimation(0)}
           transition={sharedTransition}
-          className="h-[20px] w-[80px] rounded-sm bg-gradient-to-r from-purple-700 via-fuchsia-500 to-indigo-500"
+          className="h-1/6 w-2/3 rounded-sm bg-gradient-to-r from-purple-700 via-fuchsia-500 to-indigo-500"
         />
 
         {/* Middle row containing Left (Index 3) and Right (Index 1) */}
-        <div className="h-[80px] w-full flex justify-between items-center">
+        <div className="h-2/3 w-full flex justify-between items-center">
           {/* Left Box (Index 3) */}
           <motion.div
             animate={getAnimation(3)}
             transition={sharedTransition}
-            className="w-[20px] h-full rounded-sm bg-gradient-to-b from-indigo-500 via-purple-600 to-fuchsia-500"
+            className="w-1/6 h-full rounded-sm bg-gradient-to-b from-indigo-500 via-purple-600 to-fuchsia-500"
           />
 
           {/* Right Box (Index 1) */}
           <motion.div
             animate={getAnimation(1)}
             transition={sharedTransition}
-            className="w-[20px] h-full rounded-sm bg-gradient-to-b from-purple-500 via-fuchsia-500 to-purple-700"
+            className="w-1/6 h-full rounded-sm bg-gradient-to-b from-purple-500 via-fuchsia-500 to-purple-700"
           />
         </div>
 
@@ -74,7 +74,7 @@ export default function Loader({ className = "" }: { className?: string }) {
         <motion.div
           animate={getAnimation(2)}
           transition={sharedTransition}
-          className="h-[20px] w-[80px] rounded-sm bg-gradient-to-r from-indigo-500 via-purple-600 to-fuchsia-600"
+          className="h-1/6 w-2/3 rounded-sm bg-gradient-to-r from-indigo-500 via-purple-600 to-fuchsia-600"
         />
       </div>
     </div>
